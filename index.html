@@ -16,9 +16,10 @@ body{margin:0;font-family:sans-serif;background:#f1f5f9}
 .btn-red{background:#dc2626}
 .btn-yellow{background:#eab308;color:black}
 .btn-blue{background:#2563eb}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{border:1px solid #ccc;padding:8px;text-align:center;font-size:13px}
-th{background:#1e3a8a;color:white}
+table{width:100%;border-collapse:collapse;margin-top:10px;table-layout:auto}
+th,td{border:1px solid #ccc;padding:8px;text-align:center;font-size:13px;white-space:normal;word-wrap:break-word;word-break:break-word;vertical-align:middle}
+th{background:#1e3a8a;color:white;white-space:nowrap}
+td{max-width:150px}
 input,select{padding:9px;width:95%;box-sizing:border-box}
 label{font-size:13px;font-weight:bold;color:#1e3a8a}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -147,6 +148,13 @@ let data = [];
 try{ data = JSON.parse(localStorage.getItem('accessories_g3_data') || '[]'); if(!Array.isArray(data)) data=[]; }catch(e){ data=[]; }
 let editIndex = -1;
 
+function formatDate(iso){
+  if(!iso) return '';
+  let p = iso.split('-');
+  if(p.length===3) return p[2]+'-'+p[1]+'-'+p[0];
+  return iso;
+}
+
 function addOrderRow(){
   let div = document.createElement('div');
   div.className = 'row-list';
@@ -259,9 +267,9 @@ function render(list){
           <td rowspan="${maxRows}">${totR}</td>
           <td rowspan="${maxRows}">${challanText}</td>
           <td rowspan="${maxRows}">${d.receivedBy||''}</td>
-          <td rowspan="${maxRows}">${d.shipmentDate||''}</td>
-          <td rowspan="${maxRows}">${d.receivedDate||''}</td>
-          <td rowspan="${maxRows}">${d.followDate||''}</td>
+          <td rowspan="${maxRows}">${formatDate(d.shipmentDate)}</td>
+          <td rowspan="${maxRows}">${formatDate(d.receivedDate)}</td>
+          <td rowspan="${maxRows}">${formatDate(d.followDate)}</td>
           <td rowspan="${maxRows}">${d.status||''}</td>
           <td rowspan="${maxRows}">${d.remarks||''}</td>
           <td rowspan="${maxRows}">
@@ -348,7 +356,7 @@ function exportExcel(){
       let o = orders[r] || {no:'', item:'', rec:''};
       let it = items[r] || {name:'', rec:''};
       let ch = r===0 ? (d.challans||[]).join(', ') : '';
-      csv+=`${d.jobNo},${d.buyer},${d.supplier},${o.no},${o.item},${o.rec},${it.name},${it.rec},${ch},${d.receivedBy},${d.shipmentDate},${d.receivedDate},${d.followDate},${d.status},${d.remarks}\n`;
+      csv+=`${d.jobNo},${d.buyer},${d.supplier},${o.no},${o.item},${o.rec},${it.name},${it.rec},${ch},${d.receivedBy},${formatDate(d.shipmentDate)},${formatDate(d.receivedDate)},${formatDate(d.followDate)},${d.status},${d.remarks}\n`;
     }
   });
   let blob=new Blob([csv],{type:'text/csv'});

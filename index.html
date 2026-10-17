@@ -161,8 +161,8 @@ label{font-size:13px;font-weight:bold;color:#1e3a8a}
 </div>
 
 <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwdrIjHMkNjntVWib3JN8Pq7t6eOHjg5Fzb8dDYKTKB0H9TTWtnzEIvG_44JRWqBW6L/exec";
 let data = [];
-try{ data = JSON.parse(localStorage.getItem('accessories_g3_data') || '[]'); if(!Array.isArray(data)) data=[]; }catch(e){ data=[]; }
 let editIndex = -1;
 
 function formatDate(iso){
@@ -171,7 +171,6 @@ function formatDate(iso){
   if(p.length===3) return p[2]+'-'+p[1]+'-'+p[0];
   return iso;
 }
-
 function addOrderRow(){
   let div = document.createElement('div');
   div.className = 'row-list';
@@ -190,10 +189,16 @@ function addChallanRow(){
   div.innerHTML = `<input placeholder="Challan No" class="challanNo"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
   document.getElementById('challanList').appendChild(div);
 }
-
-function save(){localStorage.setItem('accessories_g3_data', JSON.stringify(data)); render(); applyFilters();}
-
-function addData(){
+async function loadData(){
+  try{
+    const res = await fetch(API_URL);
+    const json = await res.json();
+    data = Array.isArray(json) ? json : [];
+    render();
+  }catch(e){ alert("Data load fail: "+e); }
+}
+function save(){ render(); applyFilters(); }
+async function addData(){
   let jobNo = document.getElementById('jobNo').value.trim();
   if(!jobNo){alert('Job No likho'); return;}
   let orders = [];
@@ -213,7 +218,6 @@ function addData(){
   document.querySelectorAll('#challanList .challanNo').forEach(c=>{
     if(c.value.trim()) challans.push(c.value.trim());
   });
-
   let obj = {
     jobNo,
     buyer: document.getElementById('buyer').value,
@@ -225,15 +229,14 @@ function addData(){
     remarks: document.getElementById('remarks').value,
     orders, items, challans
   };
-
-  if(editIndex >= 0){data[editIndex]=obj; editIndex=-1;}
-  else data.push(obj);
-
-  clearForm();
-  save();
-  alert('Save hoise');
+  try{
+    if(editIndex >= 0){ obj.id = data[editIndex].id; await fetch(API_URL,{method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({action:"update", id:obj.id, data:obj})}); editIndex=-1; }
+    else { obj.id = Date.now().toString(); await fetch(API_URL,{method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({action:"add", data:obj})}); }
+    clearForm();
+    await loadData();
+    alert('Save hoise');
+  }catch(err){ alert("Save fail: "+err); }
 }
-
 function clearForm(){
   document.getElementById('jobNo').value='';
   document.getElementById('buyer').value='';
@@ -247,7 +250,6 @@ function clearForm(){
   document.getElementById('itemList').innerHTML = `<div class="row-list"><input placeholder="Item Name" class="itemName"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
   document.getElementById('challanList').innerHTML = `<div class="row-list"><input placeholder="Challan No" class="challanNo"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
 }
-
 function getFilters(){
   let inputs = document.querySelectorAll('#filterRow input');
   let f = [];
@@ -262,13 +264,11 @@ function applyFilters(){
   let f = getFilters();
   let hasFilter = f.some(v=>v!=='');
   if(!hasFilter){ render(); return; }
-
   let filtered = data.filter(d=>{
     let orders = d.orders || [];
     let items = d.items || [];
     let challanText = (d.challans||[]).join(', ');
     let totR = orders.reduce((s,i)=>s+(parseFloat(i.rec)||0),0) + items.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
-
     let colVals = [
       formatDate(d.receivedDate),
       challanText,
@@ -285,7 +285,6 @@ function applyFilters(){
       d.status||'',
       d.remarks||''
     ];
-
     for(let c=0;c<f.length;c++){
       if(f[c]==='') continue;
       if(!colVals[c] || colVals[c].toLowerCase().indexOf(f[c])===-1) return false;
@@ -294,7 +293,6 @@ function applyFilters(){
   });
   render(filtered);
 }
-
 function render(list){
   let tbody = document.getElementById('tableBody');
   if(!tbody) return;
@@ -354,7 +352,6 @@ function render(list){
     else sBox.innerHTML='';
   }
 }
-
 function editData(i){
   let d = data[i];
   if(!d) return;
@@ -366,7 +363,6 @@ function editData(i){
   document.getElementById('followDate').value = d.followDate||'';
   document.getElementById('status').value = d.status||'';
   document.getElementById('remarks').value = d.remarks||'';
-
   let orderList = document.getElementById('orderList');
   orderList.innerHTML='';
   (d.orders && d.orders.length ? d.orders : [{no:'',item:'',rec:''}]).forEach(o=>{
@@ -375,7 +371,6 @@ function editData(i){
     div.innerHTML = `<input placeholder="Order Name" class="orderNo" value="${o.no||''}"><input placeholder="Item" class="orderItem" value="${o.item||''}"><input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px" value="${o.rec||''}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
     orderList.appendChild(div);
   });
-
   let itemList = document.getElementById('itemList');
   itemList.innerHTML='';
   (d.items && d.items.length ? d.items : [{name:'',rec:''}]).forEach(it=>{
@@ -384,7 +379,6 @@ function editData(i){
     div.innerHTML = `<input placeholder="Item Name" class="itemName" value="${it.name||''}"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px" value="${it.rec||''}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
     itemList.appendChild(div);
   });
-
   let challanList = document.getElementById('challanList');
   challanList.innerHTML='';
   (d.challans && d.challans.length ? d.challans : ['']).forEach(ch=>{
@@ -393,11 +387,17 @@ function editData(i){
     div.innerHTML = `<input placeholder="Challan No" class="challanNo" value="${ch}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
     challanList.appendChild(div);
   });
-
   editIndex=i;
   window.scrollTo(0,0);
 }
-function delData(i){if(confirm('Delete korba?')){data.splice(i,1); save(); clearFilters();}}
+async function delData(i){
+  if(!confirm('Delete korba?')) return;
+  let id = data[i].id;
+  try{
+    await fetch(API_URL,{method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({action:"delete", id:id})});
+    await loadData();
+  }catch(err){ alert("Delete fail: "+err); }
+}
 function searchJob(){
   let q = document.getElementById('searchInput').value.trim().toLowerCase();
   if(!q){alert('Job No likho'); return;}
@@ -425,7 +425,7 @@ function exportExcel(){
   a.download='accessories-follow-up-g3.csv';
   a.click();
 }
-render();
+loadData();
 </script>
 </body>
 </html>

@@ -58,7 +58,6 @@ label{font-size:13px;font-weight:bold;color:#1e3a8a}
 <option>Gusse</option>
 </select>
 </div>
-<div><label>Supplier</label><input id="supplier" placeholder="Supplier"></div>
 <div>
 <label>Received By</label>
 <select id="receivedBy">
@@ -131,7 +130,7 @@ label{font-size:13px;font-weight:bold;color:#1e3a8a}
 <table>
 <thead>
 <tr>
-<th>Date</th><th>Buyer</th><th>Job No</th><th>Supplier</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Challan No</th><th>Received By</th><th>Shipment</th><th>Received</th><th>Follow</th><th>Status</th><th>Remarks</th><th>Action</th>
+<th>Date</th><th>Buyer</th><th>Job No</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Challan No</th><th>Received By</th><th>Shipment</th><th>Received</th><th>Follow</th><th>Status</th><th>Remarks</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
@@ -199,7 +198,6 @@ function addData(){
   let obj = {
     jobNo,
     buyer: document.getElementById('buyer').value,
-    supplier: document.getElementById('supplier').value,
     receivedBy: document.getElementById('receivedBy').value,
     shipmentDate: document.getElementById('shipmentDate').value,
     receivedDate: document.getElementById('receivedDate').value,
@@ -220,7 +218,6 @@ function addData(){
 function clearForm(){
   document.getElementById('jobNo').value='';
   document.getElementById('buyer').value='';
-  document.getElementById('supplier').value='';
   document.getElementById('receivedBy').value='';
   document.getElementById('shipmentDate').value='';
   document.getElementById('receivedDate').value='';
@@ -258,7 +255,6 @@ function render(list){
           <td rowspan="${maxRows}">${formatDate(d.followDate)}</td>
           <td rowspan="${maxRows}">${d.buyer||''}</td>
           <td rowspan="${maxRows}"><b>${d.jobNo||''}</b></td>
-          <td rowspan="${maxRows}">${d.supplier||''}</td>
           <td>${o.no||''}</td>
           <td>${o.item||''}</td>
           <td>${o.rec||''}</td>
@@ -300,7 +296,6 @@ function editData(i){
   if(!d) return;
   document.getElementById('jobNo').value = d.jobNo||'';
   document.getElementById('buyer').value = d.buyer||'';
-  document.getElementById('supplier').value = d.supplier||'';
   document.getElementById('receivedBy').value = d.receivedBy||'';
   document.getElementById('shipmentDate').value = d.shipmentDate||'';
   document.getElementById('receivedDate').value = d.receivedDate||'';
@@ -347,7 +342,7 @@ function searchJob(){
 }
 function showAll(){document.getElementById('searchInput').value=''; render();}
 function exportExcel(){
-  let csv='Date,Buyer,Job No,Supplier,Order Name,Order Item,Order Rec Qty,Item Name,Item Rec Qty,Total Rec,Challan No,Received By,Shipment Date,Received Date,Follow Date,Status,Remarks\n';
+  let csv='Date,Buyer,Job No,Order Name,Order Item,Order Rec Qty,Item Name,Item Rec Qty,Total Rec,Challan No,Received By,Shipment Date,Received Date,Follow Date,Status,Remarks\n';
   data.forEach(d=>{
     let orders = d.orders && d.orders.length ? d.orders : [{no:'',item:'',rec:''}];
     let items = d.items && d.items.length ? d.items : [{name:'',rec:''}];
@@ -356,7 +351,8 @@ function exportExcel(){
       let o = orders[r] || {no:'', item:'', rec:''};
       let it = items[r] || {name:'', rec:''};
       let ch = r===0 ? (d.challans||[]).join(', ') : '';
-      csv+=`${formatDate(d.followDate)},${d.buyer},${d.jobNo},${d.supplier},${o.no},${o.item},${o.rec},${it.name},${it.rec},${(orders.reduce((s,i)=>s+(parseFloat(i.rec)||0),0)+items.reduce((s,i)=>s+(parseFloat(i.rec)||0),0))},${ch},${d.receivedBy},${formatDate(d.shipmentDate)},${formatDate(d.receivedDate)},${formatDate(d.followDate)},${d.status},${d.remarks}\n`;
+      let totR = (d.orders||[]).reduce((s,i)=>s+(parseFloat(i.rec)||0),0)+(d.items||[]).reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
+      csv+=`${formatDate(d.followDate)},${d.buyer},${d.jobNo},${o.no},${o.item},${o.rec},${it.name},${it.rec},${totR},${ch},${d.receivedBy},${formatDate(d.shipmentDate)},${formatDate(d.receivedDate)},${formatDate(d.followDate)},${d.status},${d.remarks}\n`;
     }
   });
   let blob=new Blob([csv],{type:'text/csv'});

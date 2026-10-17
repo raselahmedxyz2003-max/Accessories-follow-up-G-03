@@ -7,7 +7,7 @@
 <style>
 body{margin:0;font-family:sans-serif;background:#f1f5f9}
 .top{background:#1e3a8a;color:white;text-align:center;padding:16px;font-size:20px;font-weight:bold}
-.box{max-width:1000px;margin:10px auto;padding:10px}
+.box{max-width:1100px;margin:10px auto;padding:10px}
 .card{background:white;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
 .search{display:flex;gap:8px;margin-bottom:10px}
 .search input{flex:1;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
@@ -16,11 +16,14 @@ body{margin:0;font-family:sans-serif;background:#f1f5f9}
 .btn-red{background:#dc2626}
 .btn-yellow{background:#eab308;color:black}
 table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{border:1px solid #ccc;padding:8px;text-align:center;font-size:14px}
+th,td{border:1px solid #ccc;padding:8px;text-align:center;font-size:13px}
 th{background:#1e3a8a;color:white}
-input,select{padding:6px;width:95%;box-sizing:border-box}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media(max-width:600px){.form-grid{grid-template-columns:1fr} table{font-size:12px}}
+input,select{padding:8px;width:95%;box-sizing:border-box}
+label{font-size:13px;font-weight:bold;color:#1e3a8a}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.date-box{display:flex;flex-direction:column;gap:4px}
+.summary{background:#ecfdf5;border:1px solid #16a34a;padding:10px;border-radius:8px;margin-top:10px;font-weight:bold}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -34,20 +37,23 @@ input,select{padding:6px;width:95%;box-sizing:border-box}
 <button class="btn" onclick="searchJob()">Search</button>
 <button class="btn-yellow" onclick="showAll()">Show All</button>
 </div>
+<div id="summaryBox"></div>
 </div>
 
 <div class="card">
-<h3>New Data Entry</h3>
+<h3>New Data Entry (Ek Job e onek Item add korte parba)</h3>
 <div class="form-grid">
-<input id="jobNo" placeholder="Job No *">
-<input id="buyer" placeholder="Buyer">
-<input id="item" placeholder="Item Name">
-<input id="supplier" placeholder="Supplier">
-<input id="orderQty" type="number" placeholder="Order Qty">
-<input id="receivedQty" type="number" placeholder="Received Qty">
-<input id="challanNo" placeholder="Challan No">
-<input id="shipmentDate" type="date" placeholder="Shipment Date">
-<input id="followDate" type="date" placeholder="Follow Up Date">
+<div><label>Job No *</label><input id="jobNo" placeholder="Job No"></div>
+<div><label>Buyer</label><input id="buyer" placeholder="Buyer"></div>
+<div><label>Item Name</label><input id="item" placeholder="Item Name"></div>
+<div><label>Supplier</label><input id="supplier" placeholder="Supplier"></div>
+<div><label>Order Qty</label><input id="orderQty" type="number" placeholder="Order Qty"></div>
+<div><label>Received Qty</label><input id="receivedQty" type="number" placeholder="Received Qty"></div>
+<div><label>Challan No</label><input id="challanNo" placeholder="Challan No"></div>
+<div class="date-box"><label>Shipment Date</label><input id="shipmentDate" type="date"></div>
+<div class="date-box"><label>Received Date</label><input id="receivedDate" type="date"></div>
+<div class="date-box"><label>Follow Up Date</label><input id="followDate" type="date"></div>
+<div><label>Status</label>
 <select id="status">
 <option value="">Status Select</option>
 <option>Pending</option>
@@ -56,9 +62,11 @@ input,select{padding:6px;width:95%;box-sizing:border-box}
 <option>Received</option>
 <option>Follow Up</option>
 </select>
-<input id="remarks" placeholder="Remarks" style="grid-column: span 2">
 </div>
-<button class="btn btn-green" style="width:100%;margin-top:10px" onclick="addData()">Add / Save</button>
+<div style="grid-column: span 2"><label>Remarks</label><input id="remarks" placeholder="Remarks"></div>
+</div>
+<button class="btn btn-green" style="width:100%;margin-top:10px" onclick="addData()">Add Item</button>
+<p style="color:#555;font-size:13px">Tip: Same Job No diye bar Add Item chap dile oi job er jonno onek item joma hobe.</p>
 </div>
 
 <div class="card">
@@ -67,7 +75,7 @@ input,select{padding:6px;width:95%;box-sizing:border-box}
 <table>
 <thead>
 <tr>
-<th>Job No</th><th>Buyer</th><th>Item</th><th>Supplier</th><th>Order Qty</th><th>Received</th><th>Balance</th><th>Challan No</th><th>Shipment Date</th><th>Follow Date</th><th>Status</th><th>Remarks</th><th>Action</th>
+<th>Job No</th><th>Buyer</th><th>Item</th><th>Supplier</th><th>Order Qty</th><th>Received</th><th>Balance</th><th>Challan No</th><th>Shipment Date</th><th>Received Date</th><th>Follow Date</th><th>Status</th><th>Remarks</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
@@ -99,6 +107,7 @@ function addData() {
     receivedQty: document.getElementById('receivedQty').value,
     challanNo: document.getElementById('challanNo').value,
     shipmentDate: document.getElementById('shipmentDate').value,
+    receivedDate: document.getElementById('receivedDate').value,
     followDate: document.getElementById('followDate').value,
     status: document.getElementById('status').value,
     remarks: document.getElementById('remarks').value
@@ -114,7 +123,7 @@ function addData() {
 }
 
 function clearForm(){
-  ['jobNo','buyer','item','supplier','orderQty','receivedQty','challanNo','shipmentDate','followDate','remarks'].forEach(id=>document.getElementById(id).value='');
+  ['item','supplier','orderQty','receivedQty','challanNo','shipmentDate','receivedDate','followDate','remarks'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('status').value='';
 }
 
@@ -123,19 +132,23 @@ function render(list){
   tbody.innerHTML = '';
   let showList = list || data;
   document.getElementById('count').innerText = showList.length;
+  let totalOrder=0, totalRec=0;
   showList.forEach((d,i)=>{
-    let balance = (parseFloat(d.orderQty)||0) - (parseFloat(d.receivedQty)||0);
+    let oq=parseFloat(d.orderQty)||0, rq=parseFloat(d.receivedQty)||0;
+    totalOrder+=oq; totalRec+=rq;
+    let balance = oq - rq;
     let realIndex = data.indexOf(d);
     tbody.innerHTML += `<tr>
       <td><b>${d.jobNo}</b></td>
       <td>${d.buyer||''}</td>
       <td>${d.item||''}</td>
       <td>${d.supplier||''}</td>
-      <td>${d.orderQty||''}</td>
-      <td>${d.receivedQty||''}</td>
+      <td>${oq||''}</td>
+      <td>${rq||''}</td>
       <td>${balance}</td>
       <td>${d.challanNo||''}</td>
       <td>${d.shipmentDate||''}</td>
+      <td>${d.receivedDate||''}</td>
       <td>${d.followDate||''}</td>
       <td>${d.status||''}</td>
       <td>${d.remarks||''}</td>
@@ -145,6 +158,11 @@ function render(list){
       </td>
     </tr>`;
   });
+  if(showList.length>0){
+    document.getElementById('summaryBox').innerHTML = `<div class="summary">Total Order: ${totalOrder} | Total Received: ${totalRec} | Balance: ${totalOrder-totalRec}</div>`;
+  } else {
+    document.getElementById('summaryBox').innerHTML = '';
+  }
 }
 
 function editData(i){
@@ -157,6 +175,7 @@ function editData(i){
   document.getElementById('receivedQty').value = d.receivedQty;
   document.getElementById('challanNo').value = d.challanNo;
   document.getElementById('shipmentDate').value = d.shipmentDate;
+  document.getElementById('receivedDate').value = d.receivedDate;
   document.getElementById('followDate').value = d.followDate;
   document.getElementById('status').value = d.status;
   document.getElementById('remarks').value = d.remarks;
@@ -181,10 +200,10 @@ function searchJob(){
 function showAll(){document.getElementById('searchInput').value=''; render();}
 
 function exportExcel(){
-  let csv = 'Job No,Buyer,Item,Supplier,Order Qty,Received Qty,Balance,Challan No,Shipment Date,Follow Date,Status,Remarks\n';
+  let csv = 'Job No,Buyer,Item,Supplier,Order Qty,Received Qty,Balance,Challan No,Shipment Date,Received Date,Follow Date,Status,Remarks\n';
   data.forEach(d=>{
     let balance = (parseFloat(d.orderQty)||0) - (parseFloat(d.receivedQty)||0);
-    csv += `${d.jobNo},${d.buyer},${d.item},${d.supplier},${d.orderQty},${d.receivedQty},${balance},${d.challanNo},${d.shipmentDate},${d.followDate},${d.status},${d.remarks}\n`;
+    csv += `${d.jobNo},${d.buyer},${d.item},${d.supplier},${d.orderQty},${d.receivedQty},${balance},${d.challanNo},${d.shipmentDate},${d.receivedDate},${d.followDate},${d.status},${d.remarks}\n`;
   });
   let blob = new Blob([csv], {type:'text/csv'});
   let a = document.createElement('a');

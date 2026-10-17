@@ -7,7 +7,7 @@
 <style>
 body{margin:0;font-family:sans-serif;background:#f1f5f9}
 .top{background:#1e3a8a;color:white;text-align:center;padding:16px;font-size:20px;font-weight:bold}
-.box{max-width:1100px;margin:10px auto;padding:10px}
+.box{max-width:1200px;margin:10px auto;padding:10px}
 .card{background:white;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
 .search{display:flex;gap:8px;margin-bottom:10px}
 .search input{flex:1;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
@@ -131,7 +131,7 @@ label{font-size:13px;font-weight:bold;color:#1e3a8a}
 <table>
 <thead>
 <tr>
-<th>Job No</th><th>Buyer</th><th>Supplier</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Challan No</th><th>Received By</th><th>Shipment</th><th>Received</th><th>Follow</th><th>Status</th><th>Remarks</th><th>Action</th>
+<th>Date</th><th>Buyer</th><th>Job No</th><th>Supplier</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Challan No</th><th>Received By</th><th>Shipment</th><th>Received</th><th>Follow</th><th>Status</th><th>Remarks</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
@@ -255,8 +255,9 @@ function render(list){
       let it = items[r] || {name:'', rec:''};
       if(r===0){
         tbody.innerHTML += `<tr>
-          <td rowspan="${maxRows}"><b>${d.jobNo||''}</b></td>
+          <td rowspan="${maxRows}">${formatDate(d.followDate)}</td>
           <td rowspan="${maxRows}">${d.buyer||''}</td>
+          <td rowspan="${maxRows}"><b>${d.jobNo||''}</b></td>
           <td rowspan="${maxRows}">${d.supplier||''}</td>
           <td>${o.no||''}</td>
           <td>${o.item||''}</td>
@@ -346,7 +347,7 @@ function searchJob(){
 }
 function showAll(){document.getElementById('searchInput').value=''; render();}
 function exportExcel(){
-  let csv='Job No,Buyer,Supplier,Order Name,Order Item,Order Rec Qty,Item Name,Item Rec Qty,Challan No,Received By,Shipment Date,Received Date,Follow Date,Status,Remarks\n';
+  let csv='Date,Buyer,Job No,Supplier,Order Name,Order Item,Order Rec Qty,Item Name,Item Rec Qty,Total Rec,Challan No,Received By,Shipment Date,Received Date,Follow Date,Status,Remarks\n';
   data.forEach(d=>{
     let orders = d.orders && d.orders.length ? d.orders : [{no:'',item:'',rec:''}];
     let items = d.items && d.items.length ? d.items : [{name:'',rec:''}];
@@ -355,7 +356,7 @@ function exportExcel(){
       let o = orders[r] || {no:'', item:'', rec:''};
       let it = items[r] || {name:'', rec:''};
       let ch = r===0 ? (d.challans||[]).join(', ') : '';
-      csv+=`${d.jobNo},${d.buyer},${d.supplier},${o.no},${o.item},${o.rec},${it.name},${it.rec},${ch},${d.receivedBy},${formatDate(d.shipmentDate)},${formatDate(d.receivedDate)},${formatDate(d.followDate)},${d.status},${d.remarks}\n`;
+      csv+=`${formatDate(d.followDate)},${d.buyer},${d.jobNo},${d.supplier},${o.no},${o.item},${o.rec},${it.name},${it.rec},${(orders.reduce((s,i)=>s+(parseFloat(i.rec)||0),0)+items.reduce((s,i)=>s+(parseFloat(i.rec)||0),0))},${ch},${d.receivedBy},${formatDate(d.shipmentDate)},${formatDate(d.receivedDate)},${formatDate(d.followDate)},${d.status},${d.remarks}\n`;
     }
   });
   let blob=new Blob([csv],{type:'text/csv'});

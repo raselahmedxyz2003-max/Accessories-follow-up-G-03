@@ -2,427 +2,129 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Accessories Follow Up G-3</title>
 <style>
-body{margin:0;font-family:sans-serif;background:#f1f5f9}
-.top{background:#1e3a8a;color:white;text-align:center;padding:16px;font-size:20px;font-weight:bold}
-.box{max-width:1300px;margin:10px auto;padding:10px}
-.card{background:white;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
-.search{display:flex;gap:8px;margin-bottom:10px}
-.search input{flex:1;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-.btn{padding:10px 14px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;color:white;background:#1e3a8a}
-.btn-green{background:#16a34a}
-.btn-red{background:#dc2626}
-.btn-yellow{background:#eab308;color:black}
-.btn-blue{background:#2563eb}
-.btn-clear{background:#64748b}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{border:1px solid #ccc;padding:8px;text-align:center;font-size:13px;white-space:nowrap;vertical-align:middle}
-th{background:#1e3a8a;color:white}
-th input{width:90%;padding:5px;margin-top:4px;border-radius:5px;border:1px solid #ccc;font-size:12px;box-sizing:border-box}
-input,select{padding:9px;width:95%;box-sizing:border-box}
-label{font-size:13px;font-weight:bold;color:#1e3a8a}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.row-list{display:flex;gap:6px;margin-bottom:6px;align-items:center}
-.row-list input{flex:1}
-.summary{background:#ecfdf5;border:1px solid #16a34a;padding:10px;border-radius:8px;margin-top:10px;font-weight:bold}
-@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;padding:10px}
+.card{background:#fff;border-radius:10px;padding:15px;margin-bottom:15px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+h2{margin:0 0 10px}
+input,select{width:100%;padding:8px;margin:5px 0;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
+button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;margin:3px 0}
+.btn-blue{background:#2563eb;color:#fff}
+.btn-green{background:#16a34a;color:#fff;width:100%;padding:12px}
+.btn-yellow{background:#eab308}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #ddd;padding:6px;text-align:left}
+th{background:#1e3a8a;color:#fff}
 </style>
 </head>
 <body>
-<div class="top">Accessories Follow Up G-3</div>
-<div class="box">
-
 <div class="card">
-<h3>Search Job No</h3>
-<div class="search">
+<h2>Accessories Follow Up G-3</h2>
 <input id="searchInput" placeholder="Job No likho...">
-<button class="btn" onclick="searchJob()">Search</button>
-<button class="btn-yellow" onclick="showAll()">Show All</button>
-</div>
-<div id="summaryBox"></div>
+<button class="btn-blue" onclick="searchJob()">Search</button>
+<button class="btn-yellow" onclick="loadData()">Show All</button>
+<div id="totalDiv" style="margin-top:10px;background:#dcfce7;padding:8px;border-radius:6px">Total Received Qty: 0</div>
 </div>
 
 <div class="card">
-<h3>New Data Entry</h3>
-<div class="form-grid">
-<div><label>Job No *</label><input id="jobNo" placeholder="Job No"></div>
-<div>
-<label>Buyer</label>
-<select id="buyer">
-<option value="">Buyer Select</option>
-<option>C&A</option>
-<option>Gina Tricot</option>
-<option>Tom Tailor</option>
-<option>Zara</option>
-<option>Otcf</option>
-<option>Gusse</option>
-</select>
-</div>
-<div>
-<label>Received By</label>
-<select id="receivedBy">
-<option value="">Select Name</option>
-<option>Rasel Ahmed</option>
-<option>Billal hossen</option>
-<option>Rakib Ahmed</option>
-<option>Sourov chandra Hauladar</option>
-</select>
-</div>
-<div><label>Shipment Date</label><input id="shipmentDate" type="date"></div>
-<div><label>Received Date</label><input id="receivedDate" type="date"></div>
-<div><label>Follow Up Date</label><input id="followDate" type="date"></div>
-<div>
-<label>Status</label>
-<select id="status">
-<option value="">Status Select</option>
-<option>Pending</option>
-<option>Ordered</option>
-<option>Shipped</option>
-<option>Received</option>
-<option>Follow Up</option>
-</select>
-</div>
-<div><label>Remarks</label><input id="remarks" placeholder="Remarks"></div>
-</div>
-
-<div style="margin-top:14px">
+<h2>New Data Entry</h2>
+<label>Job No *</label><input id="jobNo" placeholder="Job No">
+<label>Buyer</label><input id="buyer" placeholder="Buyer">
+<label>Received By</label><input id="receivedBy" placeholder="Received By">
+<label>Shipment Date</label><input id="shipmentDate" type="date">
+<label>Received Date</label><input id="receivedDate" type="date">
+<label>Follow Up Date</label><input id="followDate" type="date">
+<label>Status</label><input id="status" placeholder="Status">
+<label>Remarks</label><input id="remarks" placeholder="Remarks">
 <label>Order Name | Item | Order Received Qty</label>
-<div id="orderList">
-<div class="row-list">
-<input placeholder="Order Name" class="orderNo">
-<input placeholder="Item" class="orderItem">
-<input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px">
-<button class="btn-red" onclick="this.parentElement.remove()">X</button>
-</div>
-</div>
-<button class="btn btn-blue" onclick="addOrderRow()">+ Add Order No</button>
-</div>
-
-<div style="margin-top:14px">
+<div id="orderDiv"><div><input class="oName" placeholder="Order Name"><input class="oItem" placeholder="Item"><input class="oQty" placeholder="Order Received Qty" type="number"></div></div>
+<button class="btn-blue" onclick="addOrder()">+ Add Order No</button>
 <label>Item Name | Item Received Qty</label>
-<div id="itemList">
-<div class="row-list">
-<input placeholder="Item Name" class="itemName">
-<input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px">
-<button class="btn-red" onclick="this.parentElement.remove()">X</button>
-</div>
-</div>
-<button class="btn btn-blue" onclick="addItemRow()">+ Add Item</button>
-</div>
-
-<div style="margin-top:14px">
+<div id="itemDiv"><div><input class="iName" placeholder="Item Name"><input class="iQty" placeholder="Item Received Qty" type="number"></div></div>
+<button class="btn-blue" onclick="addItem()">+ Add Item</button>
 <label>Challan No</label>
-<div id="challanList">
-<div class="row-list">
-<input placeholder="Challan No" class="challanNo">
-<button class="btn-red" onclick="this.parentElement.remove()">X</button>
-</div>
-</div>
-<button class="btn btn-blue" onclick="addChallanRow()">+ Add Challan No</button>
-</div>
-
-<button class="btn btn-green" style="width:100%;margin-top:14px" onclick="addData()">Save Job</button>
+<div id="challanDiv"><input class="cNo" placeholder="Challan No"></div>
+<button class="btn-blue" onclick="addChallan()">+ Add Challan No</button>
+<button class="btn-green" onclick="saveJob()">Save Job</button>
 </div>
 
 <div class="card">
-<h3>Follow Up List (<span id="count">0</span>) <button class="btn btn-clear" style="float:right" onclick="clearFilters()">Clear Filter</button></h3>
-<div style="overflow-x:auto">
+<h2>Follow Up List (<span id="count">0</span>)</h2>
 <table>
-<thead>
-<tr>
-<th>Received</th><th>Challan No</th><th>Buyer</th><th>Job No</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Received By</th><th>Shipment</th><th>Status</th><th>Remarks</th><th>Action</th>
-</tr>
-<tr id="filterRow">
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
-<th></th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
+<thead><tr><th>Received</th><th>Challan No</th><th>Buyer</th><th>Job No</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Received By</th></tr></thead>
+<tbody id="tbody"></tbody>
 </table>
-</div>
-<button class="btn" style="margin-top:10px" onclick="exportExcel()">Export Excel</button>
-</div>
-
+<button class="btn-blue" onclick="exportExcel()">Export Excel</button>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwdrIjHMkNjntVWib3JN8Pq7t6eOHjg5Fzb8dDYKTKB0H9TTWtnzEIvG_44JRWqBW6L/exec";
-let data = [];
-let editIndex = -1;
+const API_URL = "https://script.google.com/macros/s/AKfycbwdriJHMkNjtVWib3JN8Pq7i6eOHjg5FzXYZ/exec";
 
-function formatDate(iso){
-  if(!iso) return '';
-  let p = iso.split('-');
-  if(p.length===3) return p[2]+'-'+p[1]+'-'+p[0];
-  return iso;
-}
-function addOrderRow(){
-  let div = document.createElement('div');
-  div.className = 'row-list';
-  div.innerHTML = `<input placeholder="Order Name" class="orderNo"><input placeholder="Item" class="orderItem"><input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
-  document.getElementById('orderList').appendChild(div);
-}
-function addItemRow(){
-  let div = document.createElement('div');
-  div.className = 'row-list';
-  div.innerHTML = `<input placeholder="Item Name" class="itemName"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
-  document.getElementById('itemList').appendChild(div);
-}
-function addChallanRow(){
-  let div = document.createElement('div');
-  div.className = 'row-list';
-  div.innerHTML = `<input placeholder="Challan No" class="challanNo"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
-  document.getElementById('challanList').appendChild(div);
-}
-async function loadData(){
-  try{
-    const res = await fetch(API_URL);
-    const json = await res.json();
-    data = Array.isArray(json) ? json : [];
-    render();
-  }catch(e){ alert("Data load fail: "+e); }
-}
-function save(){ render(); applyFilters(); }
-async function addData(){
-  let jobNo = document.getElementById('jobNo').value.trim();
-  if(!jobNo){alert('Job No likho'); return;}
-  let orders = [];
-  document.querySelectorAll('#orderList .row-list').forEach(r=>{
-    let no = r.querySelector('.orderNo').value.trim();
-    let item = r.querySelector('.orderItem').value.trim();
-    let rec = r.querySelector('.orderRecQty').value;
-    if(no || item || rec) orders.push({no, item, rec});
-  });
-  let items = [];
-  document.querySelectorAll('#itemList .row-list').forEach(r=>{
-    let name = r.querySelector('.itemName').value.trim();
-    let rec = r.querySelector('.itemRecQty').value;
-    if(name || rec) items.push({name, rec});
-  });
-  let challans = [];
-  document.querySelectorAll('#challanList .challanNo').forEach(c=>{
-    if(c.value.trim()) challans.push(c.value.trim());
-  });
-  let obj = {
-    jobNo,
-    buyer: document.getElementById('buyer').value,
-    receivedBy: document.getElementById('receivedBy').value,
-    shipmentDate: document.getElementById('shipmentDate').value,
-    receivedDate: document.getElementById('receivedDate').value,
-    followDate: document.getElementById('followDate').value,
-    status: document.getElementById('status').value,
-    remarks: document.getElementById('remarks').value,
-    orders, items, challans
+function addOrder(){document.getElementById('orderDiv').insertAdjacentHTML('beforeend','<div><input class="oName" placeholder="Order Name"><input class="oItem" placeholder="Item"><input class="oQty" placeholder="Order Received Qty" type="number"></div>')}
+function addItem(){document.getElementById('itemDiv').insertAdjacentHTML('beforeend','<div><input class="iName" placeholder="Item Name"><input class="iQty" placeholder="Item Received Qty" type="number"></div>')}
+function addChallan(){document.getElementById('challanDiv').insertAdjacentHTML('beforeend','<input class="cNo" placeholder="Challan No">')}
+
+function collect(){
+  const oNames=[...document.querySelectorAll('.oName')].map(e=>e.value).filter(v=>v).join(", ");
+  const oItems=[...document.querySelectorAll('.oItem')].map(e=>e.value).filter(v=>v).join(", ");
+  const oQtys=[...document.querySelectorAll('.oQty')].map(e=>e.value).filter(v=>v).join(", ");
+  const iNames=[...document.querySelectorAll('.iName')].map(e=>e.value).filter(v=>v).join(", ");
+  const iQtys=[...document.querySelectorAll('.iQty')].map(e=>e.value).filter(v=>v).join(", ");
+  const cNos=[...document.querySelectorAll('.cNo')].map(e=>e.value).filter(v=>v).join(", ");
+  return {
+    "Job No":document.getElementById('jobNo').value.trim(),
+    "Buyer":document.getElementById('buyer').value,
+    "Received By":document.getElementById('receivedBy').value,
+    "Shipment Date":document.getElementById('shipmentDate').value,
+    "Received Date":document.getElementById('receivedDate').value,
+    "Follow Up Date":document.getElementById('followDate').value,
+    "Status":document.getElementById('status').value,
+    "Remarks":document.getElementById('remarks').value,
+    "Order Name":oNames,
+    "Item":oItems,
+    "Order Rec Qty":oQtys,
+    "Item Name":iNames,
+    "Item Rec Qty":iQtys,
+    "Challan No":cNos
   };
-  try{
-    if(editIndex >= 0){ obj.id = data[editIndex].id; await fetch(API_URL,{method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({action:"update", id:obj.id, data:obj})}); editIndex=-1; }
-    else { obj.id = Date.now().toString(); await fetch(API_URL,{method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({action:"add", data:obj})}); }
-    clearForm();
-    await loadData();
-    alert('Save hoise');
-  }catch(err){ alert("Save fail: "+err); }
 }
-function clearForm(){
-  document.getElementById('jobNo').value='';
-  document.getElementById('buyer').value='';
-  document.getElementById('receivedBy').value='';
-  document.getElementById('shipmentDate').value='';
-  document.getElementById('receivedDate').value='';
-  document.getElementById('followDate').value='';
-  document.getElementById('status').value='';
-  document.getElementById('remarks').value='';
-  document.getElementById('orderList').innerHTML = `<div class="row-list"><input placeholder="Order Name" class="orderNo"><input placeholder="Item" class="orderItem"><input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
-  document.getElementById('itemList').innerHTML = `<div class="row-list"><input placeholder="Item Name" class="itemName"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
-  document.getElementById('challanList').innerHTML = `<div class="row-list"><input placeholder="Challan No" class="challanNo"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
+
+async function saveJob(){
+  const data=collect();
+  if(!data["Job No"]){alert("Job No dao");return}
+  const res=await fetch(API_URL,{method:"POST",body:JSON.stringify({action:"add",data})});
+  const j=await res.json();
+  alert("Save hoise");
+  loadData();
 }
-function getFilters(){
-  let inputs = document.querySelectorAll('#filterRow input');
-  let f = [];
-  inputs.forEach(i=> f.push((i.value||'').trim().toLowerCase()));
-  return f;
-}
-function clearFilters(){
-  document.querySelectorAll('#filterRow input').forEach(i=> i.value='');
-  render();
-}
-function applyFilters(){
-  let f = getFilters();
-  let hasFilter = f.some(v=>v!=='');
-  if(!hasFilter){ render(); return; }
-  let filtered = data.filter(d=>{
-    let orders = d.orders || [];
-    let items = d.items || [];
-    let challanText = (d.challans||[]).join(', ');
-    let totR = orders.reduce((s,i)=>s+(parseFloat(i.rec)||0),0) + items.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
-    let colVals = [
-      formatDate(d.receivedDate),
-      challanText,
-      d.buyer||'',
-      d.jobNo||'',
-      orders.map(o=>o.no).join(' '),
-      orders.map(o=>o.item).join(' '),
-      orders.map(o=>o.rec).join(' '),
-      items.map(i=>i.name).join(' '),
-      items.map(i=>i.rec).join(' '),
-      String(totR),
-      d.receivedBy||'',
-      formatDate(d.shipmentDate),
-      d.status||'',
-      d.remarks||''
-    ];
-    for(let c=0;c<f.length;c++){
-      if(f[c]==='') continue;
-      if(!colVals[c] || colVals[c].toLowerCase().indexOf(f[c])===-1) return false;
-    }
-    return true;
-  });
-  render(filtered);
-}
-function render(list){
-  let tbody = document.getElementById('tableBody');
-  if(!tbody) return;
-  tbody.innerHTML='';
-  let showList = list || data;
-  document.getElementById('count').innerText = showList.length;
-  let totalR=0;
-  showList.forEach((d)=>{
-    let orders = d.orders && d.orders.length ? d.orders : [{no:'', item:'', rec:''}];
-    let items = d.items && d.items.length ? d.items : [{name:'', rec:''}];
-    let challans = d.challans || [];
-    let totORec = orders.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
-    let totIRec = items.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
-    let totR = totORec + totIRec;
-    totalR+=totR;
-    let challanText = challans.join(', ');
-    let realIndex = data.indexOf(d);
-    let maxRows = Math.max(orders.length, items.length, 1);
-    for(let r=0; r<maxRows; r++){
-      let o = orders[r] || {no:'', item:'', rec:''};
-      let it = items[r] || {name:'', rec:''};
-      if(r===0){
-        tbody.innerHTML += `<tr>
-          <td rowspan="${maxRows}">${formatDate(d.receivedDate)}</td>
-          <td rowspan="${maxRows}">${challanText}</td>
-          <td rowspan="${maxRows}">${d.buyer||''}</td>
-          <td rowspan="${maxRows}"><b>${d.jobNo||''}</b></td>
-          <td>${o.no||''}</td>
-          <td>${o.item||''}</td>
-          <td>${o.rec||''}</td>
-          <td>${it.name||''}</td>
-          <td>${it.rec||''}</td>
-          <td rowspan="${maxRows}">${totR}</td>
-          <td rowspan="${maxRows}">${d.receivedBy||''}</td>
-          <td rowspan="${maxRows}">${formatDate(d.shipmentDate)}</td>
-          <td rowspan="${maxRows}">${d.status||''}</td>
-          <td rowspan="${maxRows}">${d.remarks||''}</td>
-          <td rowspan="${maxRows}">
-            <button class="btn-yellow" onclick="editData(${realIndex})">Edit</button>
-            <button class="btn-red" onclick="delData(${realIndex})">Delete</button>
-          </td>
-        </tr>`;
-      } else {
-        tbody.innerHTML += `<tr>
-          <td>${o.no||''}</td>
-          <td>${o.item||''}</td>
-          <td>${o.rec||''}</td>
-          <td>${it.name||''}</td>
-          <td>${it.rec||''}</td>
-        </tr>`;
-      }
-    }
-  });
-  let sBox = document.getElementById('summaryBox');
-  if(sBox){
-    if(showList.length>0) sBox.innerHTML = `<div class="summary">Total Received Qty: ${totalR}</div>`;
-    else sBox.innerHTML='';
-  }
-}
-function editData(i){
-  let d = data[i];
-  if(!d) return;
-  document.getElementById('jobNo').value = d.jobNo||'';
-  document.getElementById('buyer').value = d.buyer||'';
-  document.getElementById('receivedBy').value = d.receivedBy||'';
-  document.getElementById('shipmentDate').value = d.shipmentDate||'';
-  document.getElementById('receivedDate').value = d.receivedDate||'';
-  document.getElementById('followDate').value = d.followDate||'';
-  document.getElementById('status').value = d.status||'';
-  document.getElementById('remarks').value = d.remarks||'';
-  let orderList = document.getElementById('orderList');
-  orderList.innerHTML='';
-  (d.orders && d.orders.length ? d.orders : [{no:'',item:'',rec:''}]).forEach(o=>{
-    let div = document.createElement('div');
-    div.className='row-list';
-    div.innerHTML = `<input placeholder="Order Name" class="orderNo" value="${o.no||''}"><input placeholder="Item" class="orderItem" value="${o.item||''}"><input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px" value="${o.rec||''}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
-    orderList.appendChild(div);
-  });
-  let itemList = document.getElementById('itemList');
-  itemList.innerHTML='';
-  (d.items && d.items.length ? d.items : [{name:'',rec:''}]).forEach(it=>{
-    let div = document.createElement('div');
-    div.className='row-list';
-    div.innerHTML = `<input placeholder="Item Name" class="itemName" value="${it.name||''}"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px" value="${it.rec||''}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
-    itemList.appendChild(div);
-  });
-  let challanList = document.getElementById('challanList');
-  challanList.innerHTML='';
-  (d.challans && d.challans.length ? d.challans : ['']).forEach(ch=>{
-    let div = document.createElement('div');
-    div.className='row-list';
-    div.innerHTML = `<input placeholder="Challan No" class="challanNo" value="${ch}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
-    challanList.appendChild(div);
-  });
-  editIndex=i;
-  window.scrollTo(0,0);
-}
-async function delData(i){
-  if(!confirm('Delete korba?')) return;
-  let id = data[i].id;
-  try{
-    await fetch(API_URL,{method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({action:"delete", id:id})});
-    await loadData();
-  }catch(err){ alert("Delete fail: "+err); }
+
+async function loadData(){
+  const res=await fetch(API_URL);
+  const data=await res.json();
+  render(data);
 }
 function searchJob(){
-  let q = document.getElementById('searchInput').value.trim().toLowerCase();
-  if(!q){alert('Job No likho'); return;}
-  let result = data.filter(d => (d.jobNo||'').toLowerCase().includes(q));
-  if(result.length===0){alert('Ei Job No pawa jay nai'); render([]);} else render(result);
+  const q=document.getElementById('searchInput').value.trim();
+  fetch(API_URL).then(r=>r.json()).then(d=>render(d.filter(x=>String(x["Job No"]).includes(q))));
 }
-function showAll(){document.getElementById('searchInput').value=''; clearFilters();}
+function render(data){
+  document.getElementById('count').innerText=data.length;
+  let total=0;
+  const tb=document.getElementById('tbody');
+  tb.innerHTML=data.map(r=>{
+    total+=parseFloat(r["Total Rec"])||0;
+    return `<tr><td>${r["Received Date"]||""}</td><td>${r["Challan No"]||""}</td><td>${r["Buyer"]||""}</td><td>${r["Job No"]||""}</td><td>${r["Order Name"]||""}</td><td>${r["Item"]||""}</td><td>${r["Order Rec Qty"]||""}</td><td>${r["Item Name"]||""}</td><td>${r["Item Rec Qty"]||""}</td><td>${r["Total Rec"]||0}</td><td>${r["Received By"]||""}</td></tr>`;
+  }).join("");
+  document.getElementById('totalDiv').innerText="Total Received Qty: "+total;
+}
 function exportExcel(){
-  let csv='Received,Challan No,Buyer,Job No,Order Name,Order Item,Order Rec Qty,Item Name,Item Rec Qty,Total Rec,Received By,Shipment Date,Status,Remarks\n';
-  data.forEach(d=>{
-    let orders = d.orders && d.orders.length ? d.orders : [{no:'',item:'',rec:''}];
-    let items = d.items && d.items.length ? d.items : [{name:'',rec:''}];
-    let maxRows = Math.max(orders.length, items.length, 1);
-    for(let r=0; r<maxRows; r++){
-      let o = orders[r] || {no:'', item:'', rec:''};
-      let it = items[r] || {name:'', rec:''};
-      let ch = r===0 ? (d.challans||[]).join(', ') : '';
-      let totR = (d.orders||[]).reduce((s,i)=>s+(parseFloat(i.rec)||0),0)+(d.items||[]).reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
-      csv+=`${formatDate(d.receivedDate)},${ch},${d.buyer},${d.jobNo},${o.no},${o.item},${o.rec},${it.name},${it.rec},${totR},${d.receivedBy},${formatDate(d.shipmentDate)},${d.status},${d.remarks}\n`;
-    }
-  });
-  let blob=new Blob([csv],{type:'text/csv'});
-  let a=document.createElement('a');
+  const table=document.querySelector('table');
+  const html=table.outerHTML;
+  const blob=new Blob([html],{type:'application/vnd.ms-excel'});
+  const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='accessories-follow-up-g3.csv';
+  a.download='followup.xls';
   a.click();
 }
 loadData();

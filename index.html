@@ -7,7 +7,7 @@
 <style>
 body{margin:0;font-family:sans-serif;background:#f1f5f9}
 .top{background:#1e3a8a;color:white;text-align:center;padding:16px;font-size:20px;font-weight:bold}
-.box{max-width:1200px;margin:10px auto;padding:10px}
+.box{max-width:1300px;margin:10px auto;padding:10px}
 .card{background:white;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
 .search{display:flex;gap:8px;margin-bottom:10px}
 .search input{flex:1;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
@@ -16,9 +16,11 @@ body{margin:0;font-family:sans-serif;background:#f1f5f9}
 .btn-red{background:#dc2626}
 .btn-yellow{background:#eab308;color:black}
 .btn-blue{background:#2563eb}
+.btn-clear{background:#64748b}
 table{width:100%;border-collapse:collapse;margin-top:10px}
 th,td{border:1px solid #ccc;padding:8px;text-align:center;font-size:13px;white-space:nowrap;vertical-align:middle}
 th{background:#1e3a8a;color:white}
+th input{width:90%;padding:5px;margin-top:4px;border-radius:5px;border:1px solid #ccc;font-size:12px;box-sizing:border-box}
 input,select{padding:9px;width:95%;box-sizing:border-box}
 label{font-size:13px;font-weight:bold;color:#1e3a8a}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -125,12 +127,29 @@ label{font-size:13px;font-weight:bold;color:#1e3a8a}
 </div>
 
 <div class="card">
-<h3>Follow Up List (<span id="count">0</span>)</h3>
+<h3>Follow Up List (<span id="count">0</span>) <button class="btn btn-clear" style="float:right" onclick="clearFilters()">Clear Filter</button></h3>
 <div style="overflow-x:auto">
 <table>
 <thead>
 <tr>
 <th>Received</th><th>Challan No</th><th>Buyer</th><th>Job No</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Received By</th><th>Shipment</th><th>Status</th><th>Remarks</th><th>Action</th>
+</tr>
+<tr id="filterRow">
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th><input placeholder="Filter" onkeyup="applyFilters()"></th>
+<th></th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
@@ -172,7 +191,7 @@ function addChallanRow(){
   document.getElementById('challanList').appendChild(div);
 }
 
-function save(){localStorage.setItem('accessories_g3_data', JSON.stringify(data)); render();}
+function save(){localStorage.setItem('accessories_g3_data', JSON.stringify(data)); render(); applyFilters();}
 
 function addData(){
   let jobNo = document.getElementById('jobNo').value.trim();
@@ -227,6 +246,53 @@ function clearForm(){
   document.getElementById('orderList').innerHTML = `<div class="row-list"><input placeholder="Order Name" class="orderNo"><input placeholder="Item" class="orderItem"><input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
   document.getElementById('itemList').innerHTML = `<div class="row-list"><input placeholder="Item Name" class="itemName"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
   document.getElementById('challanList').innerHTML = `<div class="row-list"><input placeholder="Challan No" class="challanNo"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
+}
+
+function getFilters(){
+  let inputs = document.querySelectorAll('#filterRow input');
+  let f = [];
+  inputs.forEach(i=> f.push((i.value||'').trim().toLowerCase()));
+  return f;
+}
+function clearFilters(){
+  document.querySelectorAll('#filterRow input').forEach(i=> i.value='');
+  render();
+}
+function applyFilters(){
+  let f = getFilters();
+  let hasFilter = f.some(v=>v!=='');
+  if(!hasFilter){ render(); return; }
+
+  let filtered = data.filter(d=>{
+    let orders = d.orders || [];
+    let items = d.items || [];
+    let challanText = (d.challans||[]).join(', ');
+    let totR = orders.reduce((s,i)=>s+(parseFloat(i.rec)||0),0) + items.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
+
+    let colVals = [
+      formatDate(d.receivedDate),
+      challanText,
+      d.buyer||'',
+      d.jobNo||'',
+      orders.map(o=>o.no).join(' '),
+      orders.map(o=>o.item).join(' '),
+      orders.map(o=>o.rec).join(' '),
+      items.map(i=>i.name).join(' '),
+      items.map(i=>i.rec).join(' '),
+      String(totR),
+      d.receivedBy||'',
+      formatDate(d.shipmentDate),
+      d.status||'',
+      d.remarks||''
+    ];
+
+    for(let c=0;c<f.length;c++){
+      if(f[c]==='') continue;
+      if(!colVals[c] || colVals[c].toLowerCase().indexOf(f[c])===-1) return false;
+    }
+    return true;
+  });
+  render(filtered);
 }
 
 function render(list){
@@ -331,14 +397,14 @@ function editData(i){
   editIndex=i;
   window.scrollTo(0,0);
 }
-function delData(i){if(confirm('Delete korba?')){data.splice(i,1); save();}}
+function delData(i){if(confirm('Delete korba?')){data.splice(i,1); save(); clearFilters();}}
 function searchJob(){
   let q = document.getElementById('searchInput').value.trim().toLowerCase();
   if(!q){alert('Job No likho'); return;}
   let result = data.filter(d => (d.jobNo||'').toLowerCase().includes(q));
   if(result.length===0){alert('Ei Job No pawa jay nai'); render([]);} else render(result);
 }
-function showAll(){document.getElementById('searchInput').value=''; render();}
+function showAll(){document.getElementById('searchInput').value=''; clearFilters();}
 function exportExcel(){
   let csv='Received,Challan No,Buyer,Job No,Order Name,Order Item,Order Rec Qty,Item Name,Item Rec Qty,Total Rec,Received By,Shipment Date,Status,Remarks\n';
   data.forEach(d=>{

@@ -131,7 +131,7 @@ label{font-size:13px;font-weight:bold;color:#1e3a8a}
 <table>
 <thead>
 <tr>
-<th>Job No</th><th>Buyer</th><th>Supplier</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Items (Rec Qty)</th><th>Total Rec</th><th>Challan No</th><th>Received By</th><th>Shipment</th><th>Received</th><th>Follow</th><th>Status</th><th>Remarks</th><th>Action</th>
+<th>Job No</th><th>Buyer</th><th>Supplier</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Challan No</th><th>Received By</th><th>Shipment</th><th>Received</th><th>Follow</th><th>Status</th><th>Remarks</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
@@ -233,40 +233,52 @@ function render(list){
   document.getElementById('count').innerText = showList.length;
   let totalR=0;
   showList.forEach((d)=>{
-    let orders = d.orders || [];
-    let items = d.items || [];
+    let orders = d.orders && d.orders.length ? d.orders : [{no:'', item:'', rec:''}];
+    let items = d.items && d.items.length ? d.items : [{name:'', rec:''}];
     let challans = d.challans || [];
     let totORec = orders.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
     let totIRec = items.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
     let totR = totORec + totIRec;
     totalR+=totR;
-    let orderNames = orders.map(o=>o.no).join('<br>');
-    let orderItems = orders.map(o=>o.item).join('<br>');
-    let orderRecs = orders.map(o=>o.rec||0).join('<br>');
-    let itemText = items.map(i=>`${i.name} (${i.rec||0})`).join('<br>');
     let challanText = challans.join(', ');
     let realIndex = data.indexOf(d);
-    tbody.innerHTML += `<tr>
-      <td><b>${d.jobNo||''}</b></td>
-      <td>${d.buyer||''}</td>
-      <td>${d.supplier||''}</td>
-      <td style="text-align:left">${orderNames}</td>
-      <td style="text-align:left">${orderItems}</td>
-      <td>${orderRecs}</td>
-      <td style="text-align:left">${itemText}</td>
-      <td>${totR}</td>
-      <td>${challanText}</td>
-      <td>${d.receivedBy||''}</td>
-      <td>${d.shipmentDate||''}</td>
-      <td>${d.receivedDate||''}</td>
-      <td>${d.followDate||''}</td>
-      <td>${d.status||''}</td>
-      <td>${d.remarks||''}</td>
-      <td>
-        <button class="btn-yellow" onclick="editData(${realIndex})">Edit</button>
-        <button class="btn-red" onclick="delData(${realIndex})">Delete</button>
-      </td>
-    </tr>`;
+    let maxRows = Math.max(orders.length, items.length, 1);
+    for(let r=0; r<maxRows; r++){
+      let o = orders[r] || {no:'', item:'', rec:''};
+      let it = items[r] || {name:'', rec:''};
+      if(r===0){
+        tbody.innerHTML += `<tr>
+          <td rowspan="${maxRows}"><b>${d.jobNo||''}</b></td>
+          <td rowspan="${maxRows}">${d.buyer||''}</td>
+          <td rowspan="${maxRows}">${d.supplier||''}</td>
+          <td>${o.no||''}</td>
+          <td>${o.item||''}</td>
+          <td>${o.rec||''}</td>
+          <td>${it.name||''}</td>
+          <td>${it.rec||''}</td>
+          <td rowspan="${maxRows}">${totR}</td>
+          <td rowspan="${maxRows}">${challanText}</td>
+          <td rowspan="${maxRows}">${d.receivedBy||''}</td>
+          <td rowspan="${maxRows}">${d.shipmentDate||''}</td>
+          <td rowspan="${maxRows}">${d.receivedDate||''}</td>
+          <td rowspan="${maxRows}">${d.followDate||''}</td>
+          <td rowspan="${maxRows}">${d.status||''}</td>
+          <td rowspan="${maxRows}">${d.remarks||''}</td>
+          <td rowspan="${maxRows}">
+            <button class="btn-yellow" onclick="editData(${realIndex})">Edit</button>
+            <button class="btn-red" onclick="delData(${realIndex})">Delete</button>
+          </td>
+        </tr>`;
+      } else {
+        tbody.innerHTML += `<tr>
+          <td>${o.no||''}</td>
+          <td>${o.item||''}</td>
+          <td>${o.rec||''}</td>
+          <td>${it.name||''}</td>
+          <td>${it.rec||''}</td>
+        </tr>`;
+      }
+    }
   });
   let sBox = document.getElementById('summaryBox');
   if(sBox){
@@ -327,16 +339,17 @@ function searchJob(){
 }
 function showAll(){document.getElementById('searchInput').value=''; render();}
 function exportExcel(){
-  let csv='Job No,Buyer,Supplier,Order Name,Order Item,Order Rec Qty,Item,Item Rec Qty,Challan No,Received By,Shipment Date,Received Date,Follow Date,Status,Remarks\n';
+  let csv='Job No,Buyer,Supplier,Order Name,Order Item,Order Rec Qty,Item Name,Item Rec Qty,Challan No,Received By,Shipment Date,Received Date,Follow Date,Status,Remarks\n';
   data.forEach(d=>{
     let orders = d.orders && d.orders.length ? d.orders : [{no:'',item:'',rec:''}];
     let items = d.items && d.items.length ? d.items : [{name:'',rec:''}];
-    orders.forEach((o,oi)=>{
-      items.forEach((it,ii)=>{
-        let ch = (oi===0 && ii===0) ? (d.challans||[]).join(', ') : '';
-        csv+=`${d.jobNo},${d.buyer},${d.supplier},${o.no},${o.item},${o.rec},${it.name},${it.rec},${ch},${d.receivedBy},${d.shipmentDate},${d.receivedDate},${d.followDate},${d.status},${d.remarks}\n`;
-      });
-    });
+    let maxRows = Math.max(orders.length, items.length, 1);
+    for(let r=0; r<maxRows; r++){
+      let o = orders[r] || {no:'', item:'', rec:''};
+      let it = items[r] || {name:'', rec:''};
+      let ch = r===0 ? (d.challans||[]).join(', ') : '';
+      csv+=`${d.jobNo},${d.buyer},${d.supplier},${o.no},${o.item},${o.rec},${it.name},${it.rec},${ch},${d.receivedBy},${d.shipmentDate},${d.receivedDate},${d.followDate},${d.status},${d.remarks}\n`;
+    }
   });
   let blob=new Blob([csv],{type:'text/csv'});
   let a=document.createElement('a');

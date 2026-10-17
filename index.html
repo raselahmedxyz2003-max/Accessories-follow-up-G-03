@@ -75,4 +75,276 @@ label{font-size:13px;font-weight:bold;color:#1e3a8a}
 <div>
 <label>Status</label>
 <select id="status">
-<option value="">Status
+<option value="">Status Select</option>
+<option>Pending</option>
+<option>Ordered</option>
+<option>Shipped</option>
+<option>Received</option>
+<option>Follow Up</option>
+</select>
+</div>
+<div><label>Remarks</label><input id="remarks" placeholder="Remarks"></div>
+</div>
+
+<div style="margin-top:14px">
+<label>Order Name | Item | Order Received Qty</label>
+<div id="orderList">
+<div class="row-list">
+<input placeholder="Order Name" class="orderNo">
+<input placeholder="Item" class="orderItem">
+<input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px">
+<button class="btn-red" onclick="this.parentElement.remove()">X</button>
+</div>
+</div>
+<button class="btn btn-blue" onclick="addOrderRow()">+ Add Order No</button>
+</div>
+
+<div style="margin-top:14px">
+<label>Item Name | Item Received Qty</label>
+<div id="itemList">
+<div class="row-list">
+<input placeholder="Item Name" class="itemName">
+<input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px">
+<button class="btn-red" onclick="this.parentElement.remove()">X</button>
+</div>
+</div>
+<button class="btn btn-blue" onclick="addItemRow()">+ Add Item</button>
+</div>
+
+<div style="margin-top:14px">
+<label>Challan No</label>
+<div id="challanList">
+<div class="row-list">
+<input placeholder="Challan No" class="challanNo">
+<button class="btn-red" onclick="this.parentElement.remove()">X</button>
+</div>
+</div>
+<button class="btn btn-blue" onclick="addChallanRow()">+ Add Challan No</button>
+</div>
+
+<button class="btn btn-green" style="width:100%;margin-top:14px" onclick="addData()">Save Job</button>
+</div>
+
+<div class="card">
+<h3>Follow Up List (<span id="count">0</span>)</h3>
+<div style="overflow-x:auto">
+<table>
+<thead>
+<tr>
+<th>Job No</th><th>Buyer</th><th>Supplier</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Items (Rec Qty)</th><th>Total Rec</th><th>Challan No</th><th>Received By</th><th>Shipment</th><th>Received</th><th>Follow</th><th>Status</th><th>Remarks</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+<button class="btn" style="margin-top:10px" onclick="exportExcel()">Export Excel</button>
+</div>
+
+</div>
+
+<script>
+let data = [];
+try{ data = JSON.parse(localStorage.getItem('accessories_g3_data') || '[]'); if(!Array.isArray(data)) data=[]; }catch(e){ data=[]; }
+let editIndex = -1;
+
+function addOrderRow(){
+  let div = document.createElement('div');
+  div.className = 'row-list';
+  div.innerHTML = `<input placeholder="Order Name" class="orderNo"><input placeholder="Item" class="orderItem"><input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
+  document.getElementById('orderList').appendChild(div);
+}
+function addItemRow(){
+  let div = document.createElement('div');
+  div.className = 'row-list';
+  div.innerHTML = `<input placeholder="Item Name" class="itemName"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
+  document.getElementById('itemList').appendChild(div);
+}
+function addChallanRow(){
+  let div = document.createElement('div');
+  div.className = 'row-list';
+  div.innerHTML = `<input placeholder="Challan No" class="challanNo"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
+  document.getElementById('challanList').appendChild(div);
+}
+
+function save(){localStorage.setItem('accessories_g3_data', JSON.stringify(data)); render();}
+
+function addData(){
+  let jobNo = document.getElementById('jobNo').value.trim();
+  if(!jobNo){alert('Job No likho'); return;}
+  let orders = [];
+  document.querySelectorAll('#orderList .row-list').forEach(r=>{
+    let no = r.querySelector('.orderNo').value.trim();
+    let item = r.querySelector('.orderItem').value.trim();
+    let rec = r.querySelector('.orderRecQty').value;
+    if(no || item || rec) orders.push({no, item, rec});
+  });
+  let items = [];
+  document.querySelectorAll('#itemList .row-list').forEach(r=>{
+    let name = r.querySelector('.itemName').value.trim();
+    let rec = r.querySelector('.itemRecQty').value;
+    if(name || rec) items.push({name, rec});
+  });
+  let challans = [];
+  document.querySelectorAll('#challanList .challanNo').forEach(c=>{
+    if(c.value.trim()) challans.push(c.value.trim());
+  });
+
+  let obj = {
+    jobNo,
+    buyer: document.getElementById('buyer').value,
+    supplier: document.getElementById('supplier').value,
+    receivedBy: document.getElementById('receivedBy').value,
+    shipmentDate: document.getElementById('shipmentDate').value,
+    receivedDate: document.getElementById('receivedDate').value,
+    followDate: document.getElementById('followDate').value,
+    status: document.getElementById('status').value,
+    remarks: document.getElementById('remarks').value,
+    orders, items, challans
+  };
+
+  if(editIndex >= 0){data[editIndex]=obj; editIndex=-1;}
+  else data.push(obj);
+
+  clearForm();
+  save();
+  alert('Save hoise');
+}
+
+function clearForm(){
+  document.getElementById('jobNo').value='';
+  document.getElementById('buyer').value='';
+  document.getElementById('supplier').value='';
+  document.getElementById('receivedBy').value='';
+  document.getElementById('shipmentDate').value='';
+  document.getElementById('receivedDate').value='';
+  document.getElementById('followDate').value='';
+  document.getElementById('status').value='';
+  document.getElementById('remarks').value='';
+  document.getElementById('orderList').innerHTML = `<div class="row-list"><input placeholder="Order Name" class="orderNo"><input placeholder="Item" class="orderItem"><input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
+  document.getElementById('itemList').innerHTML = `<div class="row-list"><input placeholder="Item Name" class="itemName"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
+  document.getElementById('challanList').innerHTML = `<div class="row-list"><input placeholder="Challan No" class="challanNo"><button class="btn-red" onclick="this.parentElement.remove()">X</button></div>`;
+}
+
+function render(list){
+  let tbody = document.getElementById('tableBody');
+  if(!tbody) return;
+  tbody.innerHTML='';
+  let showList = list || data;
+  document.getElementById('count').innerText = showList.length;
+  let totalR=0;
+  showList.forEach((d)=>{
+    let orders = d.orders || [];
+    let items = d.items || [];
+    let challans = d.challans || [];
+    let totORec = orders.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
+    let totIRec = items.reduce((s,i)=>s+(parseFloat(i.rec)||0),0);
+    let totR = totORec + totIRec;
+    totalR+=totR;
+    let orderNames = orders.map(o=>o.no).join('<br>');
+    let orderItems = orders.map(o=>o.item).join('<br>');
+    let orderRecs = orders.map(o=>o.rec||0).join('<br>');
+    let itemText = items.map(i=>`${i.name} (${i.rec||0})`).join('<br>');
+    let challanText = challans.join(', ');
+    let realIndex = data.indexOf(d);
+    tbody.innerHTML += `<tr>
+      <td><b>${d.jobNo||''}</b></td>
+      <td>${d.buyer||''}</td>
+      <td>${d.supplier||''}</td>
+      <td style="text-align:left">${orderNames}</td>
+      <td style="text-align:left">${orderItems}</td>
+      <td>${orderRecs}</td>
+      <td style="text-align:left">${itemText}</td>
+      <td>${totR}</td>
+      <td>${challanText}</td>
+      <td>${d.receivedBy||''}</td>
+      <td>${d.shipmentDate||''}</td>
+      <td>${d.receivedDate||''}</td>
+      <td>${d.followDate||''}</td>
+      <td>${d.status||''}</td>
+      <td>${d.remarks||''}</td>
+      <td>
+        <button class="btn-yellow" onclick="editData(${realIndex})">Edit</button>
+        <button class="btn-red" onclick="delData(${realIndex})">Delete</button>
+      </td>
+    </tr>`;
+  });
+  let sBox = document.getElementById('summaryBox');
+  if(sBox){
+    if(showList.length>0) sBox.innerHTML = `<div class="summary">Total Received Qty: ${totalR}</div>`;
+    else sBox.innerHTML='';
+  }
+}
+
+function editData(i){
+  let d = data[i];
+  if(!d) return;
+  document.getElementById('jobNo').value = d.jobNo||'';
+  document.getElementById('buyer').value = d.buyer||'';
+  document.getElementById('supplier').value = d.supplier||'';
+  document.getElementById('receivedBy').value = d.receivedBy||'';
+  document.getElementById('shipmentDate').value = d.shipmentDate||'';
+  document.getElementById('receivedDate').value = d.receivedDate||'';
+  document.getElementById('followDate').value = d.followDate||'';
+  document.getElementById('status').value = d.status||'';
+  document.getElementById('remarks').value = d.remarks||'';
+
+  let orderList = document.getElementById('orderList');
+  orderList.innerHTML='';
+  (d.orders && d.orders.length ? d.orders : [{no:'',item:'',rec:''}]).forEach(o=>{
+    let div = document.createElement('div');
+    div.className='row-list';
+    div.innerHTML = `<input placeholder="Order Name" class="orderNo" value="${o.no||''}"><input placeholder="Item" class="orderItem" value="${o.item||''}"><input placeholder="Order Received Qty" type="number" class="orderRecQty" style="max-width:140px" value="${o.rec||''}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
+    orderList.appendChild(div);
+  });
+
+  let itemList = document.getElementById('itemList');
+  itemList.innerHTML='';
+  (d.items && d.items.length ? d.items : [{name:'',rec:''}]).forEach(it=>{
+    let div = document.createElement('div');
+    div.className='row-list';
+    div.innerHTML = `<input placeholder="Item Name" class="itemName" value="${it.name||''}"><input placeholder="Item Received Qty" type="number" class="itemRecQty" style="max-width:160px" value="${it.rec||''}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
+    itemList.appendChild(div);
+  });
+
+  let challanList = document.getElementById('challanList');
+  challanList.innerHTML='';
+  (d.challans && d.challans.length ? d.challans : ['']).forEach(ch=>{
+    let div = document.createElement('div');
+    div.className='row-list';
+    div.innerHTML = `<input placeholder="Challan No" class="challanNo" value="${ch}"><button class="btn-red" onclick="this.parentElement.remove()">X</button>`;
+    challanList.appendChild(div);
+  });
+
+  editIndex=i;
+  window.scrollTo(0,0);
+}
+function delData(i){if(confirm('Delete korba?')){data.splice(i,1); save();}}
+function searchJob(){
+  let q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if(!q){alert('Job No likho'); return;}
+  let result = data.filter(d => (d.jobNo||'').toLowerCase().includes(q));
+  if(result.length===0){alert('Ei Job No pawa jay nai'); render([]);} else render(result);
+}
+function showAll(){document.getElementById('searchInput').value=''; render();}
+function exportExcel(){
+  let csv='Job No,Buyer,Supplier,Order Name,Order Item,Order Rec Qty,Item,Item Rec Qty,Challan No,Received By,Shipment Date,Received Date,Follow Date,Status,Remarks\n';
+  data.forEach(d=>{
+    let orders = d.orders && d.orders.length ? d.orders : [{no:'',item:'',rec:''}];
+    let items = d.items && d.items.length ? d.items : [{name:'',rec:''}];
+    orders.forEach((o,oi)=>{
+      items.forEach((it,ii)=>{
+        let ch = (oi===0 && ii===0) ? (d.challans||[]).join(', ') : '';
+        csv+=`${d.jobNo},${d.buyer},${d.supplier},${o.no},${o.item},${o.rec},${it.name},${it.rec},${ch},${d.receivedBy},${d.shipmentDate},${d.receivedDate},${d.followDate},${d.status},${d.remarks}\n`;
+      });
+    });
+  });
+  let blob=new Blob([csv],{type:'text/csv'});
+  let a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='accessories-follow-up-g3.csv';
+  a.click();
+}
+render();
+</script>
+</body>
+</html>

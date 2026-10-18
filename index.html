@@ -1,133 +1,156 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Accessories Follow Up G-3</title>
+<title>Accessories Hisab Demo</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;padding:10px}
-.card{background:#fff;border-radius:10px;padding:15px;margin-bottom:15px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
-h2{margin:0 0 10px}
-input,select{width:100%;padding:8px;margin:5px 0;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
-button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;margin:3px 0}
-.btn-blue{background:#2563eb;color:#fff}
-.btn-green{background:#16a34a;color:#fff;width:100%;padding:12px}
-.btn-yellow{background:#eab308}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{border:1px solid #ddd;padding:6px;text-align:left}
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f1f5f9;margin:0}
+.login-wrap{display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.login-card{background:#fff;padding:25px;border-radius:12px;width:100%;max-width:380px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+.login-card h2{text-align:center;color:#1e3a8a}
+.login-card input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px}
+.login-card button{width:100%;padding:12px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer}
+header{background:#1e3a8a;color:#fff;padding:15px;display:flex;justify-content:space-between;align-items:center}
+header button{background:#ef4444;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+.container{max-width:700px;margin:0 auto;padding:15px}
+.card{background:#fff;border-radius:10px;padding:15px;margin-top:15px}
+.card input{width:100%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:8px}
+.btn{padding:12px;background:#2563eb;color:#fff;border:none;border-radius:8px;width:100%;cursor:pointer;font-size:16px;margin-top:8px}
+.btn-green{background:#16a34a}
+.total-box{background:#dcfce7;padding:12px;border-radius:8px;margin-top:10px;font-weight:bold;text-align:center}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #ddd;padding:8px;text-align:center}
 th{background:#1e3a8a;color:#fff}
+.job-btn{width:100%;text-align:left;padding:12px;margin:5px 0;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer}
 </style>
 </head>
 <body>
+
+<div class="login-wrap" id="loginPage">
+  <div class="login-card">
+    <h2>Login</h2>
+    <input id="username" placeholder="User Name">
+    <input id="userid" placeholder="User ID" type="password">
+    <button onclick="login()">Dhukun</button>
+    <p style="font-size:12px;color:#555;margin-top:10px">Demo: admin / 1234</p>
+  </div>
+</div>
+
+<div id="mainPage" style="display:none">
+<header><div>Welcome, <b id="userName"></b></div><button onclick="logout()">Logout</button></header>
+<div class="container">
+
 <div class="card">
-<h2>Accessories Follow Up G-3</h2>
-<input id="searchInput" placeholder="Job No likho...">
-<button class="btn-blue" onclick="searchJob()">Search</button>
-<button class="btn-yellow" onclick="loadData()">Show All</button>
-<div id="totalDiv" style="margin-top:10px;background:#dcfce7;padding:8px;border-radius:6px">Total Received Qty: 0</div>
+<h3>New Received Entry</h3>
+<input id="jobNo" placeholder="Job No * (baddhotamulok)">
+<input id="receivedDate" type="date">
+<input id="itemName" placeholder="Ki Item Received korse">
+<input id="receivedQty" placeholder="Received Qty" type="number">
+<input id="remarks" placeholder="Remarks (optional)">
+<button class="btn btn-green" onclick="saveJob()">Save</button>
 </div>
 
 <div class="card">
-<h2>New Data Entry</h2>
-<label>Job No *</label><input id="jobNo" placeholder="Job No">
-<label>Buyer</label><input id="buyer" placeholder="Buyer">
-<label>Received By</label><input id="receivedBy" placeholder="Received By">
-<label>Shipment Date</label><input id="shipmentDate" type="date">
-<label>Received Date</label><input id="receivedDate" type="date">
-<label>Follow Up Date</label><input id="followDate" type="date">
-<label>Status</label><input id="status" placeholder="Status">
-<label>Remarks</label><input id="remarks" placeholder="Remarks">
-<label>Order Name | Item | Order Received Qty</label>
-<div id="orderDiv"><div><input class="oName" placeholder="Order Name"><input class="oItem" placeholder="Item"><input class="oQty" placeholder="Order Received Qty" type="number"></div></div>
-<button class="btn-blue" onclick="addOrder()">+ Add Order No</button>
-<label>Item Name | Item Received Qty</label>
-<div id="itemDiv"><div><input class="iName" placeholder="Item Name"><input class="iQty" placeholder="Item Received Qty" type="number"></div></div>
-<button class="btn-blue" onclick="addItem()">+ Add Item</button>
-<label>Challan No</label>
-<div id="challanDiv"><input class="cNo" placeholder="Challan No"></div>
-<button class="btn-blue" onclick="addChallan()">+ Add Challan No</button>
-<button class="btn-green" onclick="saveJob()">Save Job</button>
+<h3>Job Search</h3>
+<input id="searchInput" placeholder="Job No likhe Search dao">
+<button class="btn" onclick="searchJob()">Search</button>
+<div id="allJobs" style="margin-top:10px"></div>
 </div>
 
-<div class="card">
-<h2>Follow Up List (<span id="count">0</span>)</h2>
+<div class="card" id="resultBox" style="display:none">
+<h3 id="rJobNo"></h3>
+<div class="total-box" id="totalBox"></div>
 <table>
-<thead><tr><th>Received</th><th>Challan No</th><th>Buyer</th><th>Job No</th><th>Order Name</th><th>Item</th><th>Order Rec Qty</th><th>Item Name</th><th>Item Rec Qty</th><th>Total Rec</th><th>Received By</th></tr></thead>
-<tbody id="tbody"></tbody>
+<tr><th>Received Date</th><th>Item</th><th>Qty</th></tr>
+<tbody id="resultTable"></tbody>
 </table>
-<button class="btn-blue" onclick="exportExcel()">Export Excel</button>
+</div>
+
+</div>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwdriJHMkNjtVWib3JN8Pq7i6eOHjg5FzXYZ/exec";
+const users=[{username:"admin",id:"1234",name:"Admin"}];
+let allData=[];
 
-function addOrder(){document.getElementById('orderDiv').insertAdjacentHTML('beforeend','<div><input class="oName" placeholder="Order Name"><input class="oItem" placeholder="Item"><input class="oQty" placeholder="Order Received Qty" type="number"></div>')}
-function addItem(){document.getElementById('itemDiv').insertAdjacentHTML('beforeend','<div><input class="iName" placeholder="Item Name"><input class="iQty" placeholder="Item Received Qty" type="number"></div>')}
-function addChallan(){document.getElementById('challanDiv').insertAdjacentHTML('beforeend','<input class="cNo" placeholder="Challan No">')}
+// Demo data - prothom bar er jonno
+const demoData=[
+  {jobNo:"G3-101", receivedDate:"2026-10-10", itemName:"Button", receivedQty:100, remarks:""},
+  {jobNo:"G3-101", receivedDate:"2026-10-12", itemName:"Button", receivedQty:200, remarks:"Urgent"},
+  {jobNo:"G3-102", receivedDate:"2026-10-11", itemName:"Zipper", receivedQty:150, remarks:""}
+];
 
-function collect(){
-  const oNames=[...document.querySelectorAll('.oName')].map(e=>e.value).filter(v=>v).join(", ");
-  const oItems=[...document.querySelectorAll('.oItem')].map(e=>e.value).filter(v=>v).join(", ");
-  const oQtys=[...document.querySelectorAll('.oQty')].map(e=>e.value).filter(v=>v).join(", ");
-  const iNames=[...document.querySelectorAll('.iName')].map(e=>e.value).filter(v=>v).join(", ");
-  const iQtys=[...document.querySelectorAll('.iQty')].map(e=>e.value).filter(v=>v).join(", ");
-  const cNos=[...document.querySelectorAll('.cNo')].map(e=>e.value).filter(v=>v).join(", ");
-  return {
-    "Job No":document.getElementById('jobNo').value.trim(),
-    "Buyer":document.getElementById('buyer').value,
-    "Received By":document.getElementById('receivedBy').value,
-    "Shipment Date":document.getElementById('shipmentDate').value,
-    "Received Date":document.getElementById('receivedDate').value,
-    "Follow Up Date":document.getElementById('followDate').value,
-    "Status":document.getElementById('status').value,
-    "Remarks":document.getElementById('remarks').value,
-    "Order Name":oNames,
-    "Item":oItems,
-    "Order Rec Qty":oQtys,
-    "Item Name":iNames,
-    "Item Rec Qty":iQtys,
-    "Challan No":cNos
+function loadLocal(){
+  const saved=localStorage.getItem("hisab_demo");
+  if(saved){ allData=JSON.parse(saved); }
+  else { allData=demoData; localStorage.setItem("hisab_demo", JSON.stringify(allData)); }
+}
+
+function login(){
+  const u=document.getElementById('username').value.trim();
+  const id=document.getElementById('userid').value.trim();
+  const f=users.find(x=>x.username===u && x.id===id);
+  if(f){
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('mainPage').style.display='block';
+    document.getElementById('userName').innerText=f.name;
+    document.getElementById('receivedDate').value=new Date().toISOString().slice(0,10);
+    loadLocal();
+    renderList();
+  } else alert("User Name ba ID vul!");
+}
+function logout(){
+  document.getElementById('mainPage').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+}
+function saveJob(){
+  const jobNo=document.getElementById('jobNo').value.trim();
+  if(!jobNo){alert("Job No likhte hobe!");return}
+  const entry={
+    jobNo:jobNo,
+    receivedDate:document.getElementById('receivedDate').value,
+    itemName:document.getElementById('itemName').value,
+    receivedQty:parseFloat(document.getElementById('receivedQty').value)||0,
+    remarks:document.getElementById('remarks').value
   };
+  allData.push(entry);
+  localStorage.setItem("hisab_demo", JSON.stringify(allData));
+  alert("Save hoise!");
+  document.getElementById('jobNo').value="";
+  document.getElementById('itemName').value="";
+  document.getElementById('receivedQty').value="";
+  document.getElementById('remarks').value="";
+  renderList();
 }
-
-async function saveJob(){
-  const data=collect();
-  if(!data["Job No"]){alert("Job No dao");return}
-  const res=await fetch(API_URL,{method:"POST",body:JSON.stringify({action:"add",data})});
-  const j=await res.json();
-  alert("Save hoise");
-  loadData();
-}
-
-async function loadData(){
-  const res=await fetch(API_URL);
-  const data=await res.json();
-  render(data);
+function renderList(){
+  const unique=[...new Set(allData.map(x=>x.jobNo))];
+  let html="<h4>All Jobs</h4>";
+  unique.forEach(j=>{ html+=`<button class="job-btn" onclick="showDetails('${j}')"><b>${j}</b></button>`; });
+  document.getElementById('allJobs').innerHTML=html;
 }
 function searchJob(){
   const q=document.getElementById('searchInput').value.trim();
-  fetch(API_URL).then(r=>r.json()).then(d=>render(d.filter(x=>String(x["Job No"]).includes(q))));
+  if(!q){alert("Job No likho");return}
+  showDetails(q);
 }
-function render(data){
-  document.getElementById('count').innerText=data.length;
+function showDetails(jobNo){
+  const filtered=allData.filter(x=>String(x.jobNo).toLowerCase()===String(jobNo).toLowerCase());
+  if(filtered.length===0){alert("Job pawa jayni!");return}
+  filtered.sort((a,b)=> new Date(a.receivedDate) - new Date(b.receivedDate));
   let total=0;
-  const tb=document.getElementById('tbody');
-  tb.innerHTML=data.map(r=>{
-    total+=parseFloat(r["Total Rec"])||0;
-    return `<tr><td>${r["Received Date"]||""}</td><td>${r["Challan No"]||""}</td><td>${r["Buyer"]||""}</td><td>${r["Job No"]||""}</td><td>${r["Order Name"]||""}</td><td>${r["Item"]||""}</td><td>${r["Order Rec Qty"]||""}</td><td>${r["Item Name"]||""}</td><td>${r["Item Rec Qty"]||""}</td><td>${r["Total Rec"]||0}</td><td>${r["Received By"]||""}</td></tr>`;
-  }).join("");
-  document.getElementById('totalDiv').innerText="Total Received Qty: "+total;
+  let rows="";
+  filtered.forEach(r=>{
+    total+=parseFloat(r.receivedQty)||0;
+    rows+=`<tr><td>${r.receivedDate||''}</td><td>${r.itemName||''}</td><td>${r.receivedQty||0}</td></tr>`;
+  });
+  document.getElementById('resultBox').style.display='block';
+  document.getElementById('rJobNo').innerText="Job No: "+jobNo;
+  document.getElementById('totalBox').innerText="Total Received: "+total+" pcs";
+  document.getElementById('resultTable').innerHTML=rows;
+  window.scrollTo(0,document.getElementById('resultBox').offsetTop);
 }
-function exportExcel(){
-  const table=document.querySelector('table');
-  const html=table.outerHTML;
-  const blob=new Blob([html],{type:'application/vnd.ms-excel'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='followup.xls';
-  a.click();
-}
-loadData();
 </script>
 </body>
 </html>
